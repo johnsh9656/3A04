@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../styles/Alerts.css'
+import { apiFetch } from '../api/client'
 
 /*
 fetch alerts from backend and display them here in list form (most recent first)
@@ -63,13 +64,10 @@ const Alerts = () => {
     }
   ]
 
-  // Fetch alerts from backend (ready to use, not called yet)
   const fetchAlerts = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/alerts') // Update endpoint as needed
-      if (!response.ok) throw new Error('Failed to fetch alerts')
-      const data = await response.json()
+      const data = await apiFetch('/alerts')
       setAlerts(data)
     } catch (error) {
       console.error('Error fetching alerts:', error)
@@ -80,22 +78,45 @@ const Alerts = () => {
     }
   }
 
-  // Initialize with dummy data
   useEffect(() => {
-    setAlerts(dummyAlerts)
+    fetchAlerts()
   }, [])
 
   const acknowledge_alert = async (alert_id) => {
     try {
-      // Send acknowledge request to backend
-      const response = await fetch(`/api/alerts/${alert_id}/acknowledge`, {
+      const updatedAlert = await apiFetch(`/alerts/${alert_id}/acknowledge`, {
         method: 'POST'
       })
-      if (!response.ok) throw new Error('Failed to acknowledge alert')
-      // Update alert state locally      setAlerts((prevAlerts) =>
-        prevAlerts.map((alert) => alert.alert_id === alert_id ? { ...alert, acknowledged: true, acknowledged_at: new Date().toISOString() } : alert)
+
+      // Update alert state locally with the latest backend values
+      setAlerts((prevAlerts) =>
+        prevAlerts.map((alert) =>
+          alert.alert_id === alert_id
+            ? { ...alert, ...updatedAlert }
+            : alert
+        )
+      )
     } catch (error) {
       console.error('Error acknowledging alert:', error)
+    }
+  }
+
+  const unacknowledge_alert = async (alert_id) => {
+    try {
+      const updatedAlert = await apiFetch(`/alerts/${alert_id}/unacknowledge`, {
+        method: 'POST'
+      })
+
+      // Update alert state locally
+      setAlerts((prevAlerts) =>
+        prevAlerts.map((alert) =>
+          alert.alert_id === alert_id
+            ? { ...alert, ...updatedAlert }
+            : alert
+        )
+      )
+    } catch (error) {
+      console.error('Error unacknowledging alert:', error)
     }
   }
 
@@ -108,11 +129,22 @@ const Alerts = () => {
   }
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString('en-US', {
+    if (!dateString) return 'N/A'
+
+    // Backend stores UTC without timezone suffix. Append Z so JS parses as UTC.
+    const normalizedDateString =
+      typeof dateString === 'string' && !/[zZ]|[+-]\d{2}:?\d{2}$/.test(dateString)
+        ? `${dateString}Z`
+        : dateString
+
+    return new Date(normalizedDateString).toLocaleString('en-US', {
+      timeZone: 'America/New_York',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      second: '2-digit',
+      timeZoneName: 'short'
     })
   }
 
@@ -169,6 +201,12 @@ const Alerts = () => {
                 <small className="acknowledged-time">
                   Acknowledged at {formatDate(alert.acknowledged_at)}
                 </small>
+                <button 
+                  className="btn-unacknowledge"
+                  onClick={() => {unacknowledge_alert(alert.alert_id)}}
+                >
+                  Unacknowledge
+                </button>
               </div>
             ) : (
               <div className="alert-footer">

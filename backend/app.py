@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from database import get_all
-from alert_service import get_all_alerts, get_alert_by_id, get_alerts_by_device_id, get_unacknowledged_alerts, create_alert, acknowledge_alert
+from alert_service import get_all_alerts, get_alert_by_id, get_alerts_by_device_id, get_unacknowledged_alerts, create_alert, acknowledge_alert, unacknowledge_alert
 
 app = Flask(__name__)
 CORS(app)
@@ -66,6 +66,15 @@ def create_new_alert():
 def acknowledge_existing_alert(alert_id):
     try:
         alert = acknowledge_alert(alert_id)
+        return jsonify(alert)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    
+# unacknowledge alert
+@app.route("/alerts/<int:alert_id>/unacknowledge", methods=["POST"])
+def unacknowledge_existing_alert(alert_id):
+    try:
+        alert = unacknowledge_alert(alert_id)
         return jsonify(alert)
     except ValueError as e:
         return jsonify({"error": str(e)}), 404
