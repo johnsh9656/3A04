@@ -1,0 +1,32 @@
+[
+  {
+    "audit_id": 1,
+    "user": "system",
+    "action": "Seeded demo database files.",
+    "created_at": "2026-03-28T08:00:00"
+  },
+  {
+    "audit_id": 2,
+    "user": "admin",
+    "action": "Acknowledged alert 1.",
+    "created_at": "2026-03-28T12:15:00"
+  },
+  {
+    "audit_id": 3,
+    "user": "admin",
+    "action": "Reviewed telemetry dashboard.",
+    "created_at": "2026-03-29T09:30:00"
+  },
+  {
+    "audit_id": 4,
+    "user": "operator",
+    "action": "Acknowledged alert 4.",
+    "created_at": "2026-03-29T23:05:00"
+  },
+  {
+    "audit_id": 5,
+    "user": "system",
+    "action": "Generated daily anomaly summary.",
+    "created_at": "2026-03-30T00:00:00"
+  }
+]
