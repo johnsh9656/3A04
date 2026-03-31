@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:5000/api";
+const API_BASE = "http://127.0.0.1:5000/";
 
 export async function apiFetch(path, options = {}) {
   const res = await fetch(`${API_BASE}${path}`, {
