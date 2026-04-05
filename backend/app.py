@@ -3,7 +3,7 @@ from flask_cors import CORS
 from database import get_all
 from alert_service import get_all_alerts, get_alert_by_id, get_alerts_by_device_id, get_unacknowledged_alerts, create_alert, acknowledge_alert, unacknowledge_alert
 from routes.iot_routes import iot_bp
-from rest_api_management import verify_public_api_key, get_non_sensitive_public_data
+from rest_api_management import verify_public_api_key, get_non_sensitive_public_data, enforce_rate_limit
 
 app = Flask(__name__)
 CORS(app)
@@ -92,6 +92,10 @@ def get_telemetry():
     if error:
         payload, status = error
         return jsonify(payload), status
+    
+    allowed, retry = enforce_rate_limit(f"{api_key_found}")
+    if not allowed:
+        return jsonify({"error": "Rate limit exceeded", "retry_after_seconds": retry}), 429
     
     public_data = get_non_sensitive_public_data()
     return jsonify(public_data)

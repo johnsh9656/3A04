@@ -1,5 +1,9 @@
 from database import find_many, find_one, get_all
 from flask import request, jsonify
+from time import time
+
+# Tracks API request timestamps for rate limiting
+request_history = {}
 
 # To simulate an API request open a new terminal while in the backend directory and run:
 # curl.exe -i -H "X-API-Key: api_key from user.json" http://127.0.0.1:5000/telemetry?locati
@@ -74,6 +78,16 @@ def get_non_sensitive_public_data():
         "air_quality": retrieved_telemetry["air_quality"]
     }
 
-    
+# Enforces a simple rate limit of 5 requests per minute for a given api key
+def enforce_rate_limit(key, max_requests=5, window=60):
+    now = time()
+    history = request_history.get(key, [])
+    history = [ts for ts in history if ts > now - window]
+    if len(history) >= max_requests:
+        retry_after = int(window - (now - history[0]))
+        return False, retry_after
+    history.append(now)
+    request_history[key] = history
+    return True, None   
 
     
