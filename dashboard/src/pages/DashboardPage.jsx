@@ -17,7 +17,7 @@ export default function DashboardPage() {
 
   // Mock states for the graph filters
   const [location, setLocation] = useState('All Sectors')
-  const [timeRange, setTimeRange] = useState('Last 24 Hours')
+  const [timeRange, setTimeRange] = useState('Last Hour')
   const [dataType, setDataType] = useState('Temperature')
 
   // Dummy data for the alerts section
@@ -88,21 +88,19 @@ export default function DashboardPage() {
       targetDeviceId = selectedDevice ? selectedDevice.device_id : null
     }
 
-    const getRangeHours = () => {
-      if (timeRange === 'Last 24 Hours') return 24
-      if (timeRange === 'Last 7 Days') return 24 * 7
-      if (timeRange === 'Last 30 Days') return 24 * 30
+    const getRangeMs = () => {
+      if (timeRange === 'Last 5 Minutes') return 5 * 60 * 1000
+      if (timeRange === 'Last Hour') return 60 * 60 * 1000
+      if (timeRange === 'Last 6 Hours') return 6 * 60 * 60 * 1000
+      if (timeRange === 'Last 12 Hours') return 12 * 60 * 60 * 1000
+      if (timeRange === 'Last Day') return 24 * 60 * 60 * 1000
+      if (timeRange === 'Last Week') return 7 * 24 * 60 * 60 * 1000
+      if (timeRange === 'Last Month') return 30 * 24 * 60 * 60 * 1000
       return null
     }
 
-    const rangeHours = getRangeHours()
-    const latestTimestamp = telemetry.length
-      ? Math.max(...telemetry.map(item => new Date(item.created_at).getTime()))
-      : null
-    const cutoffTimestamp =
-      latestTimestamp && rangeHours
-        ? latestTimestamp - rangeHours * 60 * 60 * 1000
-        : null
+    const rangeMs = getRangeMs()
+    const cutoffTimestamp = rangeMs ? Date.now() - rangeMs : null
 
     return telemetry
       .filter(item => {
@@ -251,9 +249,13 @@ export default function DashboardPage() {
               <option>Noise Level</option>
             </select>
             <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
-              <option>Last 24 Hours</option>
-              <option>Last 7 Days</option>
-              <option>Last 30 Days</option>
+              <option>Last 5 Minutes</option>
+              <option>Last Hour</option>
+              <option>Last 6 Hours</option>
+              <option>Last 12 Hours</option>
+              <option>Last Day</option>
+              <option>Last Week</option>
+              <option>Last Month</option>
             </select>
           </div>
         </div>
