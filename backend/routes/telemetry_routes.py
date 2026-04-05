@@ -4,6 +4,11 @@ from datetime import datetime, timedelta
 
 telemetry_bp = Blueprint('telemetry', __name__)
 
+# Get all telemetry data
+@telemetry_bp.route("/telemetry", methods=["GET"])
+def get_all_telemetry():
+    return jsonify(get_all("telemetry"))
+
 # Get all telemetry data from the last 5 minutes
 @telemetry_bp.route("/telemetry/recent", methods=["GET"])
 def get_recent_telemetry():

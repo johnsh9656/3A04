@@ -12,19 +12,13 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false)
   const [audits, setAudits] = useState([])
   const [devices, setDevices] = useState([])
+  const [telemetry, setTelemetry] = useState([])
   const navigate = useNavigate()
 
   // Mock states for the graph filters
   const [location, setLocation] = useState('All Sectors')
-  const [timeRange, setTimeRange] = useState('Last 24 Hours')
+  const [timeRange, setTimeRange] = useState('Last Hour')
   const [dataType, setDataType] = useState('Temperature')
-
-  //Dummy data for the data visualization
-  const dummyTelemetry = [
-    { device_id: 1, temperature: 18.9, humidity: 55.3, air_quality: 101.4, noise_level: 43.0, created_at: "2026-03-28T08:00:00" },
-    { device_id: 1, temperature: 19.5, humidity: 54.0, air_quality: 98.2, noise_level: 45.1, created_at: "2026-03-28T10:00:00" },
-    { device_id: 2, temperature: 21.0, humidity: 50.1, air_quality: 85.0, noise_level: 38.0, created_at: "2026-03-28T09:00:00" },
-  ]
 
   // Dummy data for the alerts section
   const recentAlerts = [
@@ -88,35 +82,58 @@ export default function DashboardPage() {
   }
 
   const getFilteredData = () => {
-    let targetDeviceId = null;
+    let targetDeviceId = null
     if (location !== 'All Sectors') {
-      const selectedDevice = devices.find(d => d.location === location);
-      targetDeviceId = selectedDevice ? selectedDevice.device_id : null; 
+      const selectedDevice = devices.find(d => d.location === location)
+      targetDeviceId = selectedDevice ? selectedDevice.device_id : null
     }
 
-    return dummyTelemetry
+    const getRangeMs = () => {
+      if (timeRange === 'Last 5 Minutes') return 5 * 60 * 1000
+      if (timeRange === 'Last Hour') return 60 * 60 * 1000
+      if (timeRange === 'Last 6 Hours') return 6 * 60 * 60 * 1000
+      if (timeRange === 'Last 12 Hours') return 12 * 60 * 60 * 1000
+      if (timeRange === 'Last Day') return 24 * 60 * 60 * 1000
+      if (timeRange === 'Last Week') return 7 * 24 * 60 * 60 * 1000
+      if (timeRange === 'Last Month') return 30 * 24 * 60 * 60 * 1000
+      return null
+    }
+
+    const rangeMs = getRangeMs()
+    const cutoffTimestamp = rangeMs ? Date.now() - rangeMs : null
+
+    return telemetry
       .filter(item => {
-        // Only filter by location now
-        if (targetDeviceId === null) return true;
-        return item.device_id === targetDeviceId; 
+        if (targetDeviceId !== null && item.device_id !== targetDeviceId) {
+          return false
+        }
+
+        if (cutoffTimestamp !== null) {
+          return new Date(item.created_at).getTime() >= cutoffTimestamp
+        }
+
+        return true
       })
       .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
       .map(item => {
-        const dateObj = new Date(item.created_at);
+        const dateObj = new Date(item.created_at)
+        const formattedTimestamp = dateObj.toLocaleString([], {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
         return {
-          // Combined Date and Time for the X-Axis
-          fullTimestamp: dateObj.toLocaleString([], { 
-            month: 'short', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit' 
-          }),
+          pointLabel: `${formattedTimestamp} · Device ${item.device_id} · #${item.telemetry_id}`,
+          fullTimestamp: formattedTimestamp,
+          deviceId: item.device_id,
+          telemetryId: item.telemetry_id,
           value: item[dataType.toLowerCase().replace(' ', '_')]
-        };
-      });
-  } 
+        }
+      })
+  }
 
-  const chartData = getFilteredData();
+  const chartData = getFilteredData()
 
   
   const fetchAlerts = async () => {
@@ -131,10 +148,23 @@ export default function DashboardPage() {
     }
   }
 
+  const fetchTelemetry = async () => {
+    try {
+      console.log('[Dashboard] Fetching telemetry from /telemetry')
+      const telemetryData = await apiFetch('/telemetry')
+      console.log('[Dashboard] /telemetry response:', telemetryData)
+      setTelemetry(Array.isArray(telemetryData) ? telemetryData : [])
+    } catch (error) {
+      console.error('Error fetching telemetry data:', error)
+      setTelemetry([])
+    }
+  }
+
   useEffect(() => {
     fetchAlerts()
     fetchAudits()
     fetchDevices()
+    fetchTelemetry()
   }, [])
 
   const fetchAudits = async () => {
@@ -188,19 +218,29 @@ export default function DashboardPage() {
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
                   <XAxis 
-                    dataKey="fullTimestamp" 
-                    tick={{ fontSize: 10}}
-                    interval="presserveStartEnd"
+                    dataKey="pointLabel" 
+                    tick={{ fontSize: 10 }}
+                    tickFormatter={(value) => value.split(' · ')[0]}
+                    interval="preserveStartEnd"
+                    minTickGap={24}
+                    allowDuplicatedCategory={false}
                   />
                   <YAxis label={{ value: dataType, angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
+                  <Tooltip
+                    formatter={(value) => [value, dataType]}
+                    labelFormatter={(label, payload) => payload?.[0]?.payload
+                      ? `${payload[0].payload.fullTimestamp} - Device ${payload[0].payload.deviceId}`
+                      : label
+                    }
+                  />
                   <Line 
                     type="monotone" 
                     dataKey="value" 
                     stroke="#2e7d32" 
                     strokeWidth={3} 
-                    dot={{ r: 4 }} 
-                    activeDot={{ r: 8 }} 
+                    dot={{ r: 5 }} 
+                    activeDot={{ r: 9, strokeWidth: 2 }} 
+                    isAnimationActive={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -222,9 +262,13 @@ export default function DashboardPage() {
               <option>Noise Level</option>
             </select>
             <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
-              <option>Last 24 Hours</option>
-              <option>Last 7 Days</option>
-              <option>Last 30 Days</option>
+              <option>Last 5 Minutes</option>
+              <option>Last Hour</option>
+              <option>Last 6 Hours</option>
+              <option>Last 12 Hours</option>
+              <option>Last Day</option>
+              <option>Last Week</option>
+              <option>Last Month</option>
             </select>
           </div>
         </div>
