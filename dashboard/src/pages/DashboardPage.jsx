@@ -3,23 +3,28 @@ import { useNavigate } from 'react-router-dom'
 import '../styles/DashboardPage.css'
 import { apiFetch } from "../api/client"
 
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
 
 export default function DashboardPage() {
-//  const [health, setHealth] = useState(null);
 
-//  useEffect(() => {
-//        apiFetch("/health").then(setHealth).catch(console.error);
-        
-//  }, []);
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(false)
   const [audits, setAudits] = useState([])
+  const [devices, setDevices] = useState([])
   const navigate = useNavigate()
 
   // Mock states for the graph filters
   const [location, setLocation] = useState('All Sectors')
   const [timeRange, setTimeRange] = useState('Last 24 Hours')
   const [dataType, setDataType] = useState('Temperature')
+
+  //Dummy data for the data visualization
+  const dummyTelemetry = [
+    { device_id: 1, temperature: 18.9, humidity: 55.3, air_quality: 101.4, noise_level: 43.0, created_at: "2026-03-28T08:00:00" },
+    { device_id: 1, temperature: 19.5, humidity: 54.0, air_quality: 98.2, noise_level: 45.1, created_at: "2026-03-28T10:00:00" },
+    { device_id: 2, temperature: 21.0, humidity: 50.1, air_quality: 85.0, noise_level: 38.0, created_at: "2026-03-28T09:00:00" },
+  ]
 
   // Dummy data for the alerts section
   const recentAlerts = [
@@ -30,17 +35,90 @@ export default function DashboardPage() {
   ]
 
   // Dummy data for audit logs
-  const auditLogs = [
-    "[10:05:12] SYSTEM: User 'admin' logged in successfully.",
-    "[10:12:45] CONFIG: Threshold 'temp_max' updated to 85 by 'admin'.",
-    "[11:30:02] ALERT: System automatically acknowledged low-priority ping.",
-    "[12:15:43] ML_ENGINE: Anomaly detection model re-calibrated.",
-    "[13:00:00] SYSTEM: Automated database backup completed.",
-    "[14:35:10] USER: 'lporter' viewed alert #1 details.",
-    "[15:22:01] SENSOR: Firmware update pushed to Sector 4."
+  const dummyAuditLogs = [
+    {
+      "audit_id": 1,
+      "user": "system",
+      "action": "Performed scheduled backup of database.",
+      "created_at": "2026-03-28T12:00:00"
+    },
+    {
+      "audit_id": 2,
+      "user": "system",
+      "action": "Restarted application server after update.",
+      "created_at": "2026-03-28T15:05:09"
+    },
+    {
+      "audit_id": 3,
+      "user": "operator",
+      "action": "Ackowledeged Alert 3.",
+      "created_at": "2026-03-28T10:42:11"
+    },
+    {
+      "audit_id": 4,
+      "user": "system",
+      "action": "Detected and blocked unauthorized login attempt.",
+      "created_at": "2026-03-28T16:02:37"
+    },
+    {
+      "audit_id": 5,
+      "user": "system",
+      "action": "System health check completed successfully.",
+      "created_at": "2026-03-28T17:30:00"
+    },
+    {
+      "audit_id": 6,
+      "user": "admin",
+      "action": "Updated Humidity threshold.",
+      "created_at": "2026-03-28T18:12:44"
+    }
   ]
 
-  // Fetch alerts from backend
+  const fetchDevices = async () => {
+    try {
+      const data = await apiFetch('/devices')
+      setDevices(data)
+    } catch (error) {
+      console.error('Error fetching devices:', error)
+      setDevices([
+      { device_id: 1, location: "Downtown Hamilton" },
+      { device_id: 2, location: "McMaster Campus" }
+      ])
+  }
+  }
+
+  const getFilteredData = () => {
+    let targetDeviceId = null;
+    if (location !== 'All Sectors') {
+      const selectedDevice = devices.find(d => d.location === location);
+      targetDeviceId = selectedDevice ? selectedDevice.device_id : null; 
+    }
+
+    return dummyTelemetry
+      .filter(item => {
+        // Only filter by location now
+        if (targetDeviceId === null) return true;
+        return item.device_id === targetDeviceId; 
+      })
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      .map(item => {
+        const dateObj = new Date(item.created_at);
+        return {
+          // Combined Date and Time for the X-Axis
+          fullTimestamp: dateObj.toLocaleString([], { 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }),
+          value: item[dataType.toLowerCase().replace(' ', '_')]
+        };
+      });
+  } 
+
+  const chartData = getFilteredData();
+
+  
   const fetchAlerts = async () => {
     try {
       setLoading(true)
@@ -55,6 +133,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchAlerts()
+    fetchAudits()
+    fetchDevices()
   }, [])
 
   const fetchAudits = async () => {
@@ -63,17 +143,8 @@ export default function DashboardPage() {
       setAudits(audit_data)
     } catch (error) {
       console.error('Error fetching system audits:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getSeverityClass = (severity) => {
-    return `severity-${severity.toLowerCase()}`
-  }
-
-  const getMethodBadge = (method) => {
-    return `method-${method.toLowerCase()}`
+      setAudits(dummyAuditLogs)
+    } 
   }
 
   const formatDate = (dateString) => {
@@ -99,6 +170,10 @@ export default function DashboardPage() {
   return (
     <div className="dashboard-page">
 
+      {/* Background */}
+      <div className="login-bg-image" />
+      <div className="login-bg-overlay" />
+
       <div className="title">
         <h2>SCEMAS Dashboard</h2>
       </div>
@@ -109,19 +184,42 @@ export default function DashboardPage() {
           <div className="graph-section">
              {/* Mockup of a Graph View */}
             <div className="graph-container">
-                <span className="mock-graph-placeholder">(Graph View Placeholder)</span>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
+                  <XAxis 
+                    dataKey="fullTimestamp" 
+                    tick={{ fontSize: 10}}
+                    interval="presserveStartEnd"
+                  />
+                  <YAxis label={{ value: dataType, angle: -90, position: 'insideLeft' }} />
+                  <Tooltip />
+                  <Line 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke="#2e7d32" 
+                    strokeWidth={3} 
+                    dot={{ r: 4 }} 
+                    activeDot={{ r: 8 }} 
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>  
           <div className="filter-options">
             <select value={location} onChange={(e) => setLocation(e.target.value)}>
-              <option>All Sectors</option>
-              <option>Block 38</option>
-              <option>Sector 4</option>
+              <option value="All Sectors">All Sectors</option>
+              {devices.map(device => (
+                <option key={device.device_id} value={device.location}>
+                  {device.location}
+                </option>
+              ))}
             </select>
             <select value={dataType} onChange={(e) => setDataType(e.target.value)}>
               <option>Temperature</option>
               <option>Humidity</option>
               <option>Air Quality</option>
+              <option>Noise Level</option>
             </select>
             <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
               <option>Last 24 Hours</option>
@@ -177,9 +275,10 @@ export default function DashboardPage() {
              <h2>System Audits</h2>
           </div>
           <div className="log-container">
-            {auditLogs.map((log, index) => (
-              <div key={index} className="log-entry">
-                {log}
+            {audits.length === 0 && <p>No audit logs available.</p>}
+            {dummyAuditLogs.map((log) => (
+              <div key={log.audit_id} className="log-entry">
+                {`${formatDate(log.created_at)} (${log.user}) - ${log.action}`}
               </div>
             ))}
           </div>

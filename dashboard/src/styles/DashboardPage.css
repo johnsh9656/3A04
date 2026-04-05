@@ -21,6 +21,28 @@
   color: #ffffff;
 }
 
+/* Background */
+.login-bg-image {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1600&q=80');
+  background-size: cover;
+  background-position: center bottom;
+  z-index: -2;
+}
+
+.login-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(30, 90, 40, 0.72) 0%,
+    rgba(20, 70, 30, 0.65) 50%,
+    rgba(10, 50, 20, 0.78) 100%
+  );
+  z-index: -1;
+}
+
 
 /* ----------------------------------
    Top Section: Data Views 
@@ -36,7 +58,7 @@
 /* Visualization */
 .data-visualization {
   display: grid;
-  grid-template-columns: 3fr 1fr;
+  grid-template-columns: 3fr 0.5fr;
   background: white;
   border-radius: 12px;
   height: 100%;
@@ -54,13 +76,6 @@
   justify-content: center;
   background-color: #d3d3d3; /* match mockup grey */
   border-radius: 8px;
-}
-
-.mock-graph-placeholder {
-  position: static; /* remove absolute positioning */
-  transform: none;
-  color: black;
-  font-size: 1.5rem;
 }
 
 
