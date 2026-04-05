@@ -117,14 +117,17 @@ export default function DashboardPage() {
       .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
       .map(item => {
         const dateObj = new Date(item.created_at)
+        const formattedTimestamp = dateObj.toLocaleString([], {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
         return {
-          // Combined Date and Time for the X-Axis
-          fullTimestamp: dateObj.toLocaleString([], { 
-            month: 'short', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit' 
-          }),
+          pointLabel: `${formattedTimestamp} · Device ${item.device_id} · #${item.telemetry_id}`,
+          fullTimestamp: formattedTimestamp,
+          deviceId: item.device_id,
+          telemetryId: item.telemetry_id,
           value: item[dataType.toLowerCase().replace(' ', '_')]
         }
       })
@@ -215,19 +218,29 @@ export default function DashboardPage() {
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
                   <XAxis 
-                    dataKey="fullTimestamp" 
-                    tick={{ fontSize: 10}}
+                    dataKey="pointLabel" 
+                    tick={{ fontSize: 10 }}
+                    tickFormatter={(value) => value.split(' · ')[0]}
                     interval="preserveStartEnd"
+                    minTickGap={24}
+                    allowDuplicatedCategory={false}
                   />
                   <YAxis label={{ value: dataType, angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
+                  <Tooltip
+                    formatter={(value) => [value, dataType]}
+                    labelFormatter={(label, payload) => payload?.[0]?.payload
+                      ? `${payload[0].payload.fullTimestamp} - Device ${payload[0].payload.deviceId}`
+                      : label
+                    }
+                  />
                   <Line 
                     type="monotone" 
                     dataKey="value" 
                     stroke="#2e7d32" 
                     strokeWidth={3} 
-                    dot={{ r: 4 }} 
-                    activeDot={{ r: 8 }} 
+                    dot={{ r: 5 }} 
+                    activeDot={{ r: 9, strokeWidth: 2 }} 
+                    isAnimationActive={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
