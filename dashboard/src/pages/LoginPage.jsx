@@ -1,13 +1,28 @@
 import { useState } from "react";
 import "./LoginPage.css";
 
+const ACCOUNTS = [
+  { username: "operator", password: "operator123", role: "City Operator" },
+  { username: "admin", password: "admin123", role: "System Admin" },
+];
+
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loggedInAs, setLoggedInAs] = useState(null);
 
   const handleLogin = () => {
-    // TODO: wire up authentication logic here
-    console.log("Login attempted:", { username, password });
+    const match = ACCOUNTS.find(
+      (acc) => acc.username === username && acc.password === password
+    );
+
+    if (match) {
+      setError("");
+      setLoggedInAs(match.role);
+    } else {
+      setError("Invalid username or password. Please try again.");
+    }
   };
 
   return (
@@ -27,42 +42,53 @@ export default function LoginPage() {
             Enter your username and password to enter SCEMAS
           </p>
 
-          <div>
-            {/* Username */}
-            <div className="login-field-group">
-              <label className="login-label" htmlFor="username">
-                Username
-              </label>
-              <input
-                id="username"
-                type="text"
-                autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="login-input"
-              />
+          {loggedInAs ? (
+            <div className="login-success">
+              <span className="login-success-icon">✓</span>
+              <p className="login-success-title">Login Successful</p>
+              <p className="login-success-role">Welcome, <strong>{loggedInAs}</strong></p>
             </div>
+          ) : (
+            <div>
+              {/* Username */}
+              <div className="login-field-group">
+                <label className="login-label" htmlFor="username">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => { setUsername(e.target.value); setError(""); }}
+                  className={`login-input ${error ? "login-input-error" : ""}`}
+                />
+              </div>
 
-            {/* Password */}
-            <div className="login-field-group">
-              <label className="login-label" htmlFor="password">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="login-input"
-              />
+              {/* Password */}
+              <div className="login-field-group">
+                <label className="login-label" htmlFor="password">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                  className={`login-input ${error ? "login-input-error" : ""}`}
+                />
+              </div>
+
+              {/* Error message */}
+              {error && <p className="login-error">{error}</p>}
+
+              {/* Login button */}
+              <button className="login-button" onClick={handleLogin}>
+                Login
+              </button>
             </div>
-
-            {/* Login button */}
-            <button className="login-button" onClick={handleLogin}>
-              Login
-            </button>
-          </div>
+          )}
         </div>
       </div>
     </div>
