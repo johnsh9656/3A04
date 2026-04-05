@@ -3,6 +3,7 @@ from flask_cors import CORS
 from database import get_all
 from alert_service import get_all_alerts, get_alert_by_id, get_alerts_by_device_id, get_unacknowledged_alerts, create_alert, acknowledge_alert, unacknowledge_alert
 from routes.iot_routes import iot_bp
+from routes.telemetry_routes import telemetry_bp
 from rest_api_management import verify_public_api_key, get_non_sensitive_public_data, enforce_rate_limit
 from audit_log_service import get_all_audit_logs, get_audit_log_by_id, get_audit_logs_by_user
 
@@ -11,6 +12,7 @@ CORS(app)
 
 # Register blueprints
 app.register_blueprint(iot_bp)
+app.register_blueprint(telemetry_bp)
 
 @app.route('/health', methods=['GET'])
 def health():
