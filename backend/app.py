@@ -10,6 +10,14 @@ from audit_log_service import get_all_audit_logs, get_audit_log_by_id, get_audit
 app = Flask(__name__)
 CORS(app)
 
+# thresholds for generating alerts based on telemetry data
+THRESHOLDS = {
+    "temperature": {"min": -20, "max": 30},
+    "humidity": {"min": 30, "max": 60},
+    "air_quality": {"min": 0, "max": 60},
+    "noise_level": {"min": 0, "max": 70}
+}
+
 # Register blueprints
 app.register_blueprint(iot_bp)
 app.register_blueprint(telemetry_bp)
