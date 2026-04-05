@@ -4,6 +4,7 @@ from database import get_all
 from alert_service import get_all_alerts, get_alert_by_id, get_alerts_by_device_id, get_unacknowledged_alerts, create_alert, acknowledge_alert, unacknowledge_alert
 from routes.iot_routes import iot_bp
 from rest_api_management import verify_public_api_key, get_non_sensitive_public_data, enforce_rate_limit
+from audit_log_service import get_all_audit_logs, get_audit_log_by_id, get_audit_logs_by_user
 
 app = Flask(__name__)
 CORS(app)
@@ -99,6 +100,30 @@ def get_telemetry():
     
     public_data = get_non_sensitive_public_data()
     return jsonify(public_data)
+
+# AUDIT LOG ENDPOINTS
+# get all audit logs
+@app.route("/audit_log", methods=["GET"])
+def get_audit_logs():
+    return jsonify(get_all_audit_logs())
+
+# get audit log by log ID
+@app.route("/audit_log/<int:audit_id>", methods=["GET"])
+def get_audit_log(audit_id):
+    audit_log = get_audit_log_by_id(audit_id)
+    if not audit_log:
+        return jsonify({"error": "Audit log not found"}), 404
+        
+    return jsonify(audit_log)
+
+# get audit logs by user
+@app.route("/audit_log/users/<user>", methods=["GET"])
+def get_audit_logs_for_specific_user(user):
+    audit_logs = get_audit_logs_by_user(user)
+    if not audit_logs:
+        return jsonify({"error": "No audit logs found for this user"}), 404
+    
+    return jsonify(audit_logs)
 
 if __name__ == '__main__':
     app.run(debug=True)
