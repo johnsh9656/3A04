@@ -12,19 +12,13 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false)
   const [audits, setAudits] = useState([])
   const [devices, setDevices] = useState([])
+  const [telemetry, setTelemetry] = useState([])
   const navigate = useNavigate()
 
   // Mock states for the graph filters
   const [location, setLocation] = useState('All Sectors')
   const [timeRange, setTimeRange] = useState('Last 24 Hours')
   const [dataType, setDataType] = useState('Temperature')
-
-  //Dummy data for the data visualization
-  const dummyTelemetry = [
-    { device_id: 1, temperature: 18.9, humidity: 55.3, air_quality: 101.4, noise_level: 43.0, created_at: "2026-03-28T08:00:00" },
-    { device_id: 1, temperature: 19.5, humidity: 54.0, air_quality: 98.2, noise_level: 45.1, created_at: "2026-03-28T10:00:00" },
-    { device_id: 2, temperature: 21.0, humidity: 50.1, air_quality: 85.0, noise_level: 38.0, created_at: "2026-03-28T09:00:00" },
-  ]
 
   // Dummy data for the alerts section
   const recentAlerts = [
@@ -88,21 +82,43 @@ export default function DashboardPage() {
   }
 
   const getFilteredData = () => {
-    let targetDeviceId = null;
+    let targetDeviceId = null
     if (location !== 'All Sectors') {
-      const selectedDevice = devices.find(d => d.location === location);
-      targetDeviceId = selectedDevice ? selectedDevice.device_id : null; 
+      const selectedDevice = devices.find(d => d.location === location)
+      targetDeviceId = selectedDevice ? selectedDevice.device_id : null
     }
 
-    return dummyTelemetry
+    const getRangeHours = () => {
+      if (timeRange === 'Last 24 Hours') return 24
+      if (timeRange === 'Last 7 Days') return 24 * 7
+      if (timeRange === 'Last 30 Days') return 24 * 30
+      return null
+    }
+
+    const rangeHours = getRangeHours()
+    const latestTimestamp = telemetry.length
+      ? Math.max(...telemetry.map(item => new Date(item.created_at).getTime()))
+      : null
+    const cutoffTimestamp =
+      latestTimestamp && rangeHours
+        ? latestTimestamp - rangeHours * 60 * 60 * 1000
+        : null
+
+    return telemetry
       .filter(item => {
-        // Only filter by location now
-        if (targetDeviceId === null) return true;
-        return item.device_id === targetDeviceId; 
+        if (targetDeviceId !== null && item.device_id !== targetDeviceId) {
+          return false
+        }
+
+        if (cutoffTimestamp !== null) {
+          return new Date(item.created_at).getTime() >= cutoffTimestamp
+        }
+
+        return true
       })
       .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
       .map(item => {
-        const dateObj = new Date(item.created_at);
+        const dateObj = new Date(item.created_at)
         return {
           // Combined Date and Time for the X-Axis
           fullTimestamp: dateObj.toLocaleString([], { 
@@ -112,11 +128,11 @@ export default function DashboardPage() {
             minute: '2-digit' 
           }),
           value: item[dataType.toLowerCase().replace(' ', '_')]
-        };
-      });
-  } 
+        }
+      })
+  }
 
-  const chartData = getFilteredData();
+  const chartData = getFilteredData()
 
   
   const fetchAlerts = async () => {
@@ -131,10 +147,23 @@ export default function DashboardPage() {
     }
   }
 
+  const fetchTelemetry = async () => {
+    try {
+      console.log('[Dashboard] Fetching telemetry from /telemetry')
+      const telemetryData = await apiFetch('/telemetry')
+      console.log('[Dashboard] /telemetry response:', telemetryData)
+      setTelemetry(Array.isArray(telemetryData) ? telemetryData : [])
+    } catch (error) {
+      console.error('Error fetching telemetry data:', error)
+      setTelemetry([])
+    }
+  }
+
   useEffect(() => {
     fetchAlerts()
     fetchAudits()
     fetchDevices()
+    fetchTelemetry()
   }, [])
 
   const fetchAudits = async () => {
@@ -190,7 +219,7 @@ export default function DashboardPage() {
                   <XAxis 
                     dataKey="fullTimestamp" 
                     tick={{ fontSize: 10}}
-                    interval="presserveStartEnd"
+                    interval="preserveStartEnd"
                   />
                   <YAxis label={{ value: dataType, angle: -90, position: 'insideLeft' }} />
                   <Tooltip />
