@@ -1,0 +1,245 @@
+/* Overall Layout */
+.dashboard-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #2e7d32; /* Soft grey background for the whole page */
+  display: grid;
+  grid-template-rows: 0.1fr 1.7fr 2fr;
+  gap: 6px;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.title h2{
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  color: #ffffff;
+}
+
+
+/* ----------------------------------
+   Top Section: Data Views 
+   display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 6px
+----------------------------------- */
+.data-section {
+  gap: 6px
+}
+
+
+/* Visualization */
+.data-visualization {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  background: white;
+  border-radius: 12px;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 5px;
+  box-sizing: border-box;
+
+}
+
+.graph-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #d3d3d3; /* match mockup grey */
+  border-radius: 8px;
+}
+
+.mock-graph-placeholder {
+  position: static; /* remove absolute positioning */
+  transform: none;
+  color: black;
+  font-size: 1.5rem;
+}
+
+
+/* Filters */
+
+.filter-options {
+  margin-top: 0;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+}
+
+
+/* ----------------------------------
+   Bottom Section: Split Panels 
+----------------------------------- */
+.bottom-panel {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr; /* Matches wireframe: Alerts is wider than Logs */
+  gap: 6px;
+  min-height: 0;
+}
+
+/* Alerts Section */
+
+.alerts-and-buttons-section {
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.alerts-title h2 {
+  color: #1a1a1a;
+  font-size: 1.25rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 12px;
+}
+
+.alerts-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.alert-row {
+  display: grid;
+  grid-template-columns: max-content max-content 1fr max-content max-content;
+  gap: 12px;
+  align-items: center;
+  padding: 3px;
+  background-color: #f9f9f9;
+  border-left: 4px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.alert-time { color: #666; font-family: monospace;}
+.alert-desc { color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.alert-type { 
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem !important;
+  font-weight: bold;
+  text-align: center;
+  transform: translateY(4px);
+  background-color: #d8d7d7; 
+}
+
+.alert-method{
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold; 
+  text-align: center;
+}
+.method-threshold { background-color: #e3f2fd; color: #1565c0; }
+.method-ml { background-color: #f3e5f5; color: #6a1b9a; }
+
+.alert-severity {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold; 
+  text-align: center;
+}
+.level-critical { background-color: #ffebee; color: #c62828; }
+.level-high { background-color: #fff3e0; color: #ef6c00; }
+.level-medium { background-color: #fff8e1; color: #f57f17; }
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 12px;
+  border-radius: 8px;
+  border: 3px solid rgb(34, 33, 33);
+  font-weight: 600;
+  font-size: 11pt;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  flex: 1;
+}
+
+.btn-primary.full-width {
+  width: 100%;
+}
+
+.btn-primary {
+  background: #2e7d32;
+  color: white;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+  opacity: 0.85;
+}
+
+/* Audit Logs Section */
+
+.audit-section {
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.audit-title h2 {
+  color: #1a1a1a;
+  font-size: 1.25rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 12px;
+}
+
+.log-container {
+  background-color: #1e1e1e; 
+  color: #4af626; 
+  padding: 16px;
+  border-radius: 8px;
+  overflow-y: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.log-entry {
+  margin-bottom: 8px;
+  word-wrap: break-word;
+} 
+
+
+
+
+
+
