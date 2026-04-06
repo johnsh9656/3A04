@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useNavigate } from 'react-router-dom'
 import '../styles/DashboardPage.css'
 import { apiFetch } from "../api/client"
@@ -20,6 +20,8 @@ function readSessionUser() {
 
 export default function DashboardPage() {
 
+  const [health, setHealth] = useState(null);
+  const [isHealthModalOpen, setIsHealthModalOpen] = useState(false);
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(false)
   const [audits, setAudits] = useState([])
@@ -28,6 +30,9 @@ export default function DashboardPage() {
   const navigate = useNavigate()
   const [user] = useState(() => readSessionUser())
   const isAdmin = user?.username === "admin"
+  const [isThresModalOpen, setIsThresModalOpen] = useState(false);
+  const [thresholds, setThresholds] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
 
   // Mock states for the graph filters
   const [location, setLocation] = useState('All Sectors')
@@ -174,6 +179,68 @@ export default function DashboardPage() {
     }
   }
 
+  const fetchAudits = async () => {
+    try {
+      const audit_data = await apiFetch('/audit_log')
+      setAudits(audit_data)
+    } catch (error) {
+      console.error('Error fetching system audits:', error)
+      setAudits(dummyAuditLogs)
+    } 
+  }
+
+  const fetchHealth = async () => {
+    try {
+      const health_data = await apiFetch('/health');
+      setHealth(health_data)
+      setIsHealthModalOpen(true)
+    } catch (error) {
+      console.error('Error fetching system health', error)
+    }
+  }
+
+  const fetchThresholds = async () => {
+    try {
+      const data = await apiFetch('/thresholds');
+      setThresholds(data);
+      setIsThresModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching thresholds:', error);
+      alert("Failed to load thresholds.");
+    }
+  };
+
+  const handleThresholdChange = (metric, field, value) => {
+    setThresholds(prev => ({
+      ...prev,
+      [metric]: {
+        ...prev[metric],
+        [field]: value
+      }
+    }));
+  };
+
+  const handleSaveThresholds = async () => {
+    setIsSaving(true);
+    try {
+      const updates = Object.keys(thresholds).map(metric => 
+        apiFetch(`/thresholds/${metric}`, {
+          method: 'PUT',
+          body: JSON.stringify(thresholds[metric])
+        })
+      );
+      
+      await Promise.all(updates);
+      alert("Thresholds updated successfully!");
+      setIsThresModalOpen(false);
+    } catch (error) {
+      console.error('Error saving thresholds:', error);
+      alert("Error saving one or more thresholds. Check console.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   useEffect(() => {
     if (!user) {
       navigate("/", { replace: true })
@@ -189,15 +256,7 @@ export default function DashboardPage() {
     }
   }, [user, isAdmin, navigate])
 
-  const fetchAudits = async () => {
-    try {
-      const audit_data = await apiFetch('/audits')
-      setAudits(audit_data)
-    } catch (error) {
-      console.error('Error fetching system audits:', error)
-      setAudits(dummyAuditLogs)
-    } 
-  }
+
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A'
@@ -338,11 +397,18 @@ export default function DashboardPage() {
               type="button"
               className="btn-secondary"
               disabled={!isAdmin}
+              onClick={fetchThresholds}
               title={isAdmin ? undefined : "Only system administrators can edit alert thresholds."}
             >
               Edit Alert Thresholds
             </button>
-            <button className="btn-secondary">View System Health</button>
+            <button 
+              type="button"
+              className="btn-secondary"
+              onClick={fetchHealth}
+            >
+              View System Health
+            </button>
           </div>
         </div>
 
@@ -354,7 +420,7 @@ export default function DashboardPage() {
             </div>
             <div className="log-container">
               {audits.length === 0 && <p>No audit logs available.</p>}
-              {dummyAuditLogs.map((log) => (
+              {audits.map((log) => (
                 <div key={log.audit_id} className="log-entry">
                   {`${formatDate(log.created_at)} (${log.user}) - ${log.action}`}
                 </div>
@@ -363,6 +429,66 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* THRESHOLD MODAL */}
+      {isThresModalOpen && (
+        <div className="thres-modal-overlay">
+          <div className="thres-modal-content">
+            <h3>Edit System Thresholds</h3>
+            <p className="thres-modal-subtitle">Define min/max values for alert triggers</p>
+            
+            <div className="threshold-grid">
+              <div className="grid-header">Metric</div>
+              <div className="grid-header">Min</div>
+              <div className="grid-header">Max</div>
+
+              {Object.keys(thresholds).map((metric) => (
+                <React.Fragment key={metric}>
+                  <div className="metric-name">{metric.replace('_', ' ')}</div>
+                  <input 
+                    type="number" 
+                    value={thresholds[metric].min} 
+                    onChange={(e) => handleThresholdChange(metric, 'min', e.target.value)}
+                  />
+                  <input 
+                    type="number" 
+                    value={thresholds[metric].max} 
+                    onChange={(e) => handleThresholdChange(metric, 'max', e.target.value)}
+                  />
+                </React.Fragment>
+              ))}
+            </div>
+
+            <div className="thres-modal-actions">
+              <button className="btn-cancel" onClick={() => setIsThresModalOpen(false)}>Cancel</button>
+              <button 
+                className="btn-save" 
+                onClick={handleSaveThresholds}
+                disabled={isSaving}
+              >
+                {isSaving ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SYSTEM HEALTH MODAL */}
+      {isHealthModalOpen && (
+        <div className="health-modal-overlay">
+          <div className="health-modal-content">
+            <h3>SCEMAS System Health</h3>
+            
+            <div className="health-section">
+              <p className="system-health">System health: {health?.status || "Checking..."}</p>
+            </div>
+
+            <div className="health-modal-actions">
+              <button className="btn-close" onClick={() => setIsHealthModalOpen(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
