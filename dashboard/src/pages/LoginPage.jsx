@@ -1,16 +1,19 @@
 import { useState } from "react";
-import "./LoginPage.css";
+import { useNavigate } from "react-router-dom";
+import "../styles/LoginPage.css";
 
 const ACCOUNTS = [
   { username: "operator", password: "operator123", role: "City Operator" },
   { username: "admin", password: "admin123", role: "System Admin" },
 ];
 
+const SCEMAS_USER_KEY = "scemasUser";
+
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loggedInAs, setLoggedInAs] = useState(null);
 
   const handleLogin = () => {
     const match = ACCOUNTS.find(
@@ -19,7 +22,11 @@ export default function LoginPage() {
 
     if (match) {
       setError("");
-      setLoggedInAs(match.role);
+      sessionStorage.setItem(
+        SCEMAS_USER_KEY,
+        JSON.stringify({ username: match.username, role: match.role })
+      );
+      navigate("/dashboard");
     } else {
       setError("Invalid username or password. Please try again.");
     }
@@ -42,14 +49,12 @@ export default function LoginPage() {
             Enter your username and password to enter SCEMAS
           </p>
 
-          {loggedInAs ? (
-            <div className="login-success">
-              <span className="login-success-icon">✓</span>
-              <p className="login-success-title">Login Successful</p>
-              <p className="login-success-role">Welcome, <strong>{loggedInAs}</strong></p>
-            </div>
-          ) : (
-            <div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin();
+            }}
+          >
               {/* Username */}
               <div className="login-field-group">
                 <label className="login-label" htmlFor="username">
@@ -84,11 +89,10 @@ export default function LoginPage() {
               {error && <p className="login-error">{error}</p>}
 
               {/* Login button */}
-              <button className="login-button" onClick={handleLogin}>
+              <button type="submit" className="login-button">
                 Login
               </button>
-            </div>
-          )}
+            </form>
         </div>
       </div>
     </div>
