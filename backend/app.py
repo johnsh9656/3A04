@@ -1,3 +1,4 @@
+from simulator import TelemetrySimulator
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from database import get_all
@@ -21,6 +22,10 @@ THRESHOLDS = {
 # Register blueprints
 app.register_blueprint(iot_bp)
 app.register_blueprint(telemetry_bp)
+
+# Initialize and start the simulator
+simulator = TelemetrySimulator(interval=10)  # 10 seconds
+simulator.start()
 
 @app.route('/health', methods=['GET'])
 def health():
@@ -136,4 +141,7 @@ def get_audit_logs_for_specific_user(user):
     return jsonify(audit_logs)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    try:
+        app.run(debug=True)
+    finally:
+        simulator.stop()
