@@ -24,7 +24,7 @@ app.register_blueprint(iot_bp)
 app.register_blueprint(telemetry_bp)
 
 # Initialize and start the simulator
-simulator = TelemetrySimulator(interval=10)  # 10 seconds
+simulator = TelemetrySimulator(interval=10, thresholds=THRESHOLDS)  # 10 seconds
 simulator.start()
 
 @app.route('/health', methods=['GET'])
