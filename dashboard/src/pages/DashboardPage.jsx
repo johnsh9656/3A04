@@ -301,7 +301,7 @@ export default function DashboardPage() {
       </div>
 
       {/* BOTTOM SECTION: Split Layout */}
-      <div className="bottom-panel">
+      <div className={`bottom-panel ${!isAdmin ? "bottom-panel-full" : ""}`}>
         
         {/* Alerts Section */}
         <div className="alerts-and-buttons-section">
@@ -346,6 +346,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Audit Logs Section */}
         {isAdmin && (
           <div className="audit-section">
             <div className="audit-title">

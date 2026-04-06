@@ -101,6 +101,10 @@
   min-height: 0;
 }
 
+.bottom-panel-full {
+  grid-template-columns: 1fr;
+}
+
 /* Alerts Section */
 
 .alerts-and-buttons-section {
