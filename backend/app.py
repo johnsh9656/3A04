@@ -140,6 +140,42 @@ def get_audit_logs_for_specific_user(user):
     
     return jsonify(audit_logs)
 
+#THRESHOLD ENDPOINTS
+# get all thresholds
+@app.route("/thresholds", methods=["GET"])
+def get_all_thresholds():
+    return THRESHOLDS
+
+# get threshold for specific metric
+@app.route("/thresholds/<metric>", methods=["GET"])
+def get_threshold_for_metric(metric):
+    if metric not in THRESHOLDS:
+        return jsonify({"error": "Metric not found"}), 404
+    
+    return jsonify(THRESHOLDS[metric]) 
+
+# update threshold for specific metric
+@app.route("/thresholds/<metric>", methods=["PUT"])
+def update_threshold_for_metric(metric):
+    if metric not in THRESHOLDS:
+        return jsonify({"error": "Metric not found"}), 404
+    
+    data = request.get_json()
+    if "min" not in data or "max" not in data:
+        return jsonify({"error": "Missing 'min' or 'max' in request body"}), 400
+    
+    try:
+        min_value = float(data["min"])
+        max_value = float(data["max"])
+    except ValueError:
+        return jsonify({"error": "'min' and 'max' must be numeric values"}), 400
+    
+    if min_value >= max_value:
+        return jsonify({"error": "'min' must be less than 'max'"}), 400
+    
+    THRESHOLDS[metric] = {"min": min_value, "max": max_value}
+    return jsonify(THRESHOLDS[metric])
+
 if __name__ == '__main__':
     try:
         app.run(debug=True)
