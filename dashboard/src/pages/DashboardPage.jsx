@@ -5,6 +5,18 @@ import { apiFetch } from "../api/client"
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+const SCEMAS_USER_KEY = "scemasUser"
+
+function readSessionUser() {
+  try {
+    const raw = sessionStorage.getItem(SCEMAS_USER_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed.username === "string" ? parsed : null
+  } catch {
+    return null
+  }
+}
 
 export default function DashboardPage() {
 
@@ -14,6 +26,8 @@ export default function DashboardPage() {
   const [devices, setDevices] = useState([])
   const [telemetry, setTelemetry] = useState([])
   const navigate = useNavigate()
+  const [user] = useState(() => readSessionUser())
+  const isAdmin = user?.username === "admin"
 
   // Mock states for the graph filters
   const [location, setLocation] = useState('All Sectors')
@@ -161,11 +175,19 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
+    if (!user) {
+      navigate("/", { replace: true })
+      return
+    }
     fetchAlerts()
-    fetchAudits()
     fetchDevices()
     fetchTelemetry()
-  }, [])
+    if (isAdmin) {
+      fetchAudits()
+    } else {
+      setAudits([])
+    }
+  }, [user, isAdmin, navigate])
 
   const fetchAudits = async () => {
     try {
@@ -195,6 +217,10 @@ export default function DashboardPage() {
       second: '2-digit',
       timeZoneName: 'short'
     })
+  }
+
+  if (!user) {
+    return null
   }
 
   return (
@@ -308,25 +334,33 @@ export default function DashboardPage() {
             >
               Manage Alerts
             </button>
-            <button className="btn-secondary">Edit Alert Thresholds</button>
+            <button
+              type="button"
+              className="btn-secondary"
+              disabled={!isAdmin}
+              title={isAdmin ? undefined : "Only system administrators can edit alert thresholds."}
+            >
+              Edit Alert Thresholds
+            </button>
             <button className="btn-secondary">View System Health</button>
           </div>
         </div>
 
-        {/* Audit Logs Section */}
-        <div className="audit-section">
-          <div className="audit-title">
-             <h2>System Audits</h2>
+        {isAdmin && (
+          <div className="audit-section">
+            <div className="audit-title">
+               <h2>System Audits</h2>
+            </div>
+            <div className="log-container">
+              {audits.length === 0 && <p>No audit logs available.</p>}
+              {dummyAuditLogs.map((log) => (
+                <div key={log.audit_id} className="log-entry">
+                  {`${formatDate(log.created_at)} (${log.user}) - ${log.action}`}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="log-container">
-            {audits.length === 0 && <p>No audit logs available.</p>}
-            {dummyAuditLogs.map((log) => (
-              <div key={log.audit_id} className="log-entry">
-                {`${formatDate(log.created_at)} (${log.user}) - ${log.action}`}
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )
