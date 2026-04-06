@@ -264,6 +264,158 @@
   word-wrap: break-word;
 } 
 
+/* Threshold Modal */
+.thres-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.thres-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 450px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  color: #333;
+}
+
+.thres-modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: #1a1a1a;
+}
+
+.thres-modal-subtitle {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.threshold-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.grid-header {
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #2e7d32;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.metric-name {
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.threshold-grid input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.thres-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  border: none;
+  background: #f0f0f0;
+  color: black;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-save {
+  padding: 10px 20px;
+  border: none;
+  background: #2e7d32;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-save:disabled {
+  opacity: 0.6;
+}
+
+/* Health Modal */
+.health-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.health-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  width: 450px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  color: #333;
+}
+
+.health-modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #1a1a1a;
+  border-bottom: 2px solid #f0f0f0;
+  padding: 16px;
+}
+
+.health-section {
+  background-color: #1e1e1e; 
+  color: #4af626; 
+  padding: 26px;
+  border-radius: 8px;
+  overflow-y: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.btn-close {
+  padding: 10px 20px;
+  border: none;
+  background: #2e7d32;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 16px;
+}
+
+
+
+
+
+
+
+
 
 
 
