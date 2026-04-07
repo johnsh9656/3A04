@@ -73,6 +73,8 @@ def get_telemetry():
 # Restricts the telemetry data to only include non-sensitive information for public API requests
 def get_non_sensitive_public_data():
     retrieved_telemetry, location = get_telemetry()
+    if retrieved_telemetry.get("error"):
+        return retrieved_telemetry
     return {
         "location": location,
         "air_quality": retrieved_telemetry["air_quality"]
