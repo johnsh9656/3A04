@@ -38,7 +38,7 @@ def create_alert(
         "alert_description": alert_description,
         "alert_method": alert_method,
         "acknowledged": False,
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.now().isoformat(),
         "acknowledged_at": None
     }
     return insert("alerts", new_alert)
@@ -53,7 +53,7 @@ def acknowledge_alert(alert_id: int):
     
     updates = {
         "acknowledged": True,
-        "acknowledged_at": datetime.utcnow().isoformat()
+        "acknowledged_at": datetime.now().isoformat()
     }
     return update("alerts", alert_id, updates)
 

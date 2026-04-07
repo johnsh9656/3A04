@@ -259,24 +259,19 @@ export default function DashboardPage() {
 
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A'
+  if (!dateString) return 'N/A'
 
-    // Backend stores UTC without timezone suffix. Append Z so JS parses as UTC.
-    const normalizedDateString =
-      typeof dateString === 'string' && !/[zZ]|[+-]\d{2}:?\d{2}$/.test(dateString)
-        ? `${dateString}Z`
-        : dateString
+  const dateObj = new Date(dateString)
 
-    return new Date(normalizedDateString).toLocaleString('en-US', {
-      timeZone: 'America/New_York',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      timeZoneName: 'short'
-    })
-  }
+  return dateObj.toLocaleString('en-US', {
+
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  })
+}
 
   if (!user) {
     return null

@@ -13,7 +13,7 @@ def get_all_telemetry():
 @telemetry_bp.route("/telemetry/recent", methods=["GET"])
 def get_recent_telemetry():
     all_telemetry = get_all("telemetry")
-    now = datetime.utcnow()
+    now = datetime.now().isoformat()
     five_mins_ago = now - timedelta(minutes=5)
     
     recent_telemetry = []
@@ -28,7 +28,7 @@ def get_recent_telemetry():
 @telemetry_bp.route("/telemetry/recent/locations", methods=["GET"])
 def get_recent_telemetry_locations():
     all_telemetry = get_all("telemetry")
-    now = datetime.utcnow()
+    now = datetime.now().isoformat()
     five_mins_ago = now - timedelta(minutes=5)
     
     locations = set()  # Set to avoid duplicates
@@ -45,7 +45,7 @@ def get_recent_telemetry_locations():
 @telemetry_bp.route("/telemetry/recent/times", methods=["GET"])
 def get_recent_telemetry_times():
     all_telemetry = get_all("telemetry")
-    now = datetime.utcnow()
+    now = datetime.now().isoformat()
     five_mins_ago = now - timedelta(minutes=5)
     
     times = []
@@ -60,7 +60,7 @@ def get_recent_telemetry_times():
 @telemetry_bp.route("/telemetry/recent/humidity", methods=["GET"])
 def get_recent_humidity():
     all_telemetry = get_all("telemetry")
-    now = datetime.utcnow()
+    now = datetime.now().isoformat()
     five_mins_ago = now - timedelta(minutes=5)
     
     humidity_values = []
@@ -75,7 +75,7 @@ def get_recent_humidity():
 @telemetry_bp.route("/telemetry/recent/air_quality", methods=["GET"])
 def get_recent_air_quality():
     all_telemetry = get_all("telemetry")
-    now = datetime.utcnow()
+    now = datetime.now().isoformat()
     five_mins_ago = now - timedelta(minutes=5)
     
     air_quality_values = []
@@ -90,7 +90,7 @@ def get_recent_air_quality():
 @telemetry_bp.route("/telemetry/recent/noise_level", methods=["GET"])
 def get_recent_noise_level():
     all_telemetry = get_all("telemetry")
-    now = datetime.utcnow()
+    now = datetime.now().isoformat()
     five_mins_ago = now - timedelta(minutes=5)
     
     noise_level_values = []
@@ -105,7 +105,7 @@ def get_recent_noise_level():
 @telemetry_bp.route("/telemetry/recent/temperature", methods=["GET"])
 def get_recent_temperature():
     all_telemetry = get_all("telemetry")
-    now = datetime.utcnow()
+    now = datetime.now().isoformat()
     five_mins_ago = now - timedelta(minutes=5)
     
     temperature_values = []

@@ -20,7 +20,7 @@ def create_device():
         "location": data["location"],
         "longitude": data["longitude"],
         "latitude": data["latitude"],
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now().isoformat()
     }
     device = insert("devices", new_device)
     return jsonify(device)
