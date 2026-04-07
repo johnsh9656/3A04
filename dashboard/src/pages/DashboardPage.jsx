@@ -154,18 +154,17 @@ export default function DashboardPage() {
 
   const chartData = getFilteredData()
 
-  
-  const fetchAlerts = async () => {
-    try {
-      setLoading(true)
-      const data = await apiFetch('/alerts')
-      setAlerts(data) 
-    } catch (error) {
-      console.error('Error fetching dashboard alerts:', error)
-    } finally {
-      setLoading(false)
-    }
+  const fetchAlerts = async (isInitialLoad = false) => {
+  try {
+    if (isInitialLoad) setLoading(true); // Only show spinner on first visit
+    const data = await apiFetch('/alerts');
+    setAlerts(data); 
+  } catch (error) {
+    console.error('Error fetching dashboard alerts:', error);
+  } finally {
+    if (isInitialLoad) setLoading(false);
   }
+};
 
   const fetchTelemetry = async () => {
     try {
@@ -256,6 +255,21 @@ export default function DashboardPage() {
     }
   }, [user, isAdmin, navigate])
 
+  useEffect(() => {
+    const REFRESH_INTERVAL = 5000; 
+
+    const intervalId = setInterval(() => {
+      console.log("Auto-refreshing dashboard data...");
+      fetchAlerts();
+      fetchTelemetry();
+    
+      if (isAdmin) {
+        fetchAudits();
+      }
+    }, REFRESH_INTERVAL);
+
+    return () => clearInterval(intervalId);
+  }, [isAdmin]); // Re-run if admin status changes
 
 
   const formatDate = (dateString) => {

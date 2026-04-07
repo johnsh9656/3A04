@@ -2023,5 +2023,167 @@
     "noise_level": 0.8,
     "created_at": "2026-04-06T20:36:28.978098",
     "telemetry_id": 225
+  },
+  {
+    "device_id": 2,
+    "temperature": 24.5,
+    "humidity": 46.4,
+    "air_quality": 56.5,
+    "noise_level": 0.8,
+    "created_at": "2026-04-06T20:43:11.122627",
+    "telemetry_id": 226
+  },
+  {
+    "device_id": 1,
+    "temperature": 16.9,
+    "humidity": 37.0,
+    "air_quality": 1.0,
+    "noise_level": 1.8,
+    "created_at": "2026-04-06T20:43:11.265397",
+    "telemetry_id": 227
+  },
+  {
+    "device_id": 5,
+    "temperature": -19.5,
+    "humidity": 35.2,
+    "air_quality": 4.2,
+    "noise_level": 8.1,
+    "created_at": "2026-04-06T20:43:21.127189",
+    "telemetry_id": 228
+  },
+  {
+    "device_id": 5,
+    "temperature": 19.5,
+    "humidity": 54.5,
+    "air_quality": 6.2,
+    "noise_level": 54.5,
+    "created_at": "2026-04-06T20:43:21.273835",
+    "telemetry_id": 229
+  },
+  {
+    "device_id": 4,
+    "temperature": -17.5,
+    "humidity": 40.3,
+    "air_quality": 40.7,
+    "noise_level": 28.4,
+    "created_at": "2026-04-06T20:43:31.136208",
+    "telemetry_id": 230
+  },
+  {
+    "device_id": 5,
+    "temperature": -16.1,
+    "humidity": 39.0,
+    "air_quality": 0.2,
+    "noise_level": 50.9,
+    "created_at": "2026-04-06T20:43:31.280936",
+    "telemetry_id": 231
+  },
+  {
+    "device_id": 3,
+    "temperature": -17.0,
+    "humidity": 44.9,
+    "air_quality": 8.8,
+    "noise_level": 47.4,
+    "created_at": "2026-04-06T20:43:41.145349",
+    "telemetry_id": 232
+  },
+  {
+    "device_id": 2,
+    "temperature": -9.3,
+    "humidity": 58.6,
+    "air_quality": -16.0,
+    "noise_level": 26.4,
+    "created_at": "2026-04-06T20:43:41.289061",
+    "telemetry_id": 233
+  },
+  {
+    "device_id": 2,
+    "temperature": 2.4,
+    "humidity": 35.8,
+    "air_quality": 58.4,
+    "noise_level": 42.7,
+    "created_at": "2026-04-06T20:43:51.154218",
+    "telemetry_id": 234
+  },
+  {
+    "device_id": 2,
+    "temperature": -9.1,
+    "humidity": 58.4,
+    "air_quality": 10.4,
+    "noise_level": 47.5,
+    "created_at": "2026-04-06T20:43:51.297209",
+    "telemetry_id": 235
+  },
+  {
+    "device_id": 2,
+    "temperature": 23.5,
+    "humidity": 53.8,
+    "air_quality": 13.3,
+    "noise_level": 85.1,
+    "created_at": "2026-04-06T20:44:01.163425",
+    "telemetry_id": 236
+  },
+  {
+    "device_id": 2,
+    "temperature": 16.8,
+    "humidity": 54.8,
+    "air_quality": 4.4,
+    "noise_level": 42.1,
+    "created_at": "2026-04-06T20:44:01.304918",
+    "telemetry_id": 237
+  },
+  {
+    "device_id": 3,
+    "temperature": 26.0,
+    "humidity": 45.9,
+    "air_quality": 37.4,
+    "noise_level": 39.8,
+    "created_at": "2026-04-06T20:44:11.172998",
+    "telemetry_id": 238
+  },
+  {
+    "device_id": 1,
+    "temperature": 6.6,
+    "humidity": 39.3,
+    "air_quality": 31.0,
+    "noise_level": 16.3,
+    "created_at": "2026-04-06T20:44:11.308938",
+    "telemetry_id": 239
+  },
+  {
+    "device_id": 5,
+    "temperature": -13.8,
+    "humidity": 49.7,
+    "air_quality": 37.2,
+    "noise_level": 44.4,
+    "created_at": "2026-04-06T20:44:21.181690",
+    "telemetry_id": 240
+  },
+  {
+    "device_id": 4,
+    "temperature": -19.0,
+    "humidity": 41.0,
+    "air_quality": 62.3,
+    "noise_level": 5.3,
+    "created_at": "2026-04-06T20:44:21.315976",
+    "telemetry_id": 241
+  },
+  {
+    "device_id": 3,
+    "temperature": 9.7,
+    "humidity": 46.1,
+    "air_quality": 23.3,
+    "noise_level": 45.8,
+    "created_at": "2026-04-06T20:44:31.188992",
+    "telemetry_id": 242
+  },
+  {
+    "device_id": 2,
+    "temperature": 2.2,
+    "humidity": 25.4,
+    "air_quality": 8.5,
+    "noise_level": 48.9,
+    "created_at": "2026-04-06T20:44:31.319588",
+    "telemetry_id": 243
   }
 ]

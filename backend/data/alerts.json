@@ -178,5 +178,53 @@
     "created_at": "2026-04-06T20:36:08.967152",
     "acknowledged_at": null,
     "alert_id": 15
+  },
+  {
+    "device_id": 2,
+    "telemetry_id": 233,
+    "alert_type": "Air Quality",
+    "alert_severity": "medium",
+    "alert_description": "Air Quality value -16.0 exceeded threshold (min: 0, max: 60).",
+    "alert_method": "threshold",
+    "acknowledged": false,
+    "created_at": "2026-04-06T20:43:41.291217",
+    "acknowledged_at": null,
+    "alert_id": 16
+  },
+  {
+    "device_id": 2,
+    "telemetry_id": 236,
+    "alert_type": "Noise Level",
+    "alert_severity": "medium",
+    "alert_description": "Noise Level value 85.1 exceeded threshold (min: 0, max: 70).",
+    "alert_method": "threshold",
+    "acknowledged": false,
+    "created_at": "2026-04-06T20:44:01.167516",
+    "acknowledged_at": null,
+    "alert_id": 17
+  },
+  {
+    "device_id": 4,
+    "telemetry_id": 241,
+    "alert_type": "Air Quality",
+    "alert_severity": "medium",
+    "alert_description": "Air Quality value 62.3 exceeded threshold (min: 0, max: 60).",
+    "alert_method": "threshold",
+    "acknowledged": false,
+    "created_at": "2026-04-06T20:44:21.318463",
+    "acknowledged_at": null,
+    "alert_id": 18
+  },
+  {
+    "device_id": 2,
+    "telemetry_id": 243,
+    "alert_type": "Humidity",
+    "alert_severity": "medium",
+    "alert_description": "Humidity value 25.4 exceeded threshold (min: 30, max: 60).",
+    "alert_method": "threshold",
+    "acknowledged": false,
+    "created_at": "2026-04-06T20:44:31.321616",
+    "acknowledged_at": null,
+    "alert_id": 19
   }
 ]
