@@ -66,7 +66,7 @@ class TelemetrySimulator:
             telemetry_data[metric] = value
         
         # Add timestamp
-        telemetry_data["created_at"] = datetime.utcnow().isoformat()
+        telemetry_data["created_at"] = datetime.now().isoformat()
         
         # Insert into database
         try:
